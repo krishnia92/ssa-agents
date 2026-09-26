@@ -1,0 +1,64 @@
+openapi: 3.0.1
+info:
+  title: Parental Benefit & VAB Assistant API
+  description: Chat endpoint for the parental benefit and VAB assistant. Send a natural-language message; the agent answers using its tools and mock agency data.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8000
+paths:
+  /chat:
+    post:
+      summary: Send a chat message
+      operationId: chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              profile:
+                summary: Check remaining days
+                value:
+                  session_id: s1
+                  message: "What parental benefit days do I have left? My id is CIT-1001"
+              estimate:
+                summary: Estimate daily amount
+                value:
+                  session_id: s1
+                  message: "How much would I get per day for Elsa? CIT-1001"
+              vab:
+                summary: Report a VAB day
+                value:
+                  session_id: s1
+                  message: "I am CIT-1001, Elsa was sick yesterday, report a full VAB day"
+      responses:
+        '200':
+          description: The agent's reply.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '500':
+          description: Internal error while running the agent.
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required: [session_id, message]
+      properties:
+        session_id:
+          type: string
+          description: Conversation id used for memory continuity.
+        message:
+          type: string
+        context:
+          type: object
+          description: Optional platform context. Not read by this agent.
+      additionalProperties: true
+    ChatResponse:
+      type: object
+      required: [response]
+      properties:
+        response:
+          type: string

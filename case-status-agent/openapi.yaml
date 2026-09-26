@@ -1,0 +1,64 @@
+openapi: 3.0.1
+info:
+  title: Case & Payment Status Assistant API
+  description: Chat endpoint for the case and payment status assistant. Send a natural-language message; the agent answers using its tools and mock agency data.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8000
+paths:
+  /chat:
+    post:
+      summary: Send a chat message
+      operationId: chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              cases:
+                summary: Where is my case
+                value:
+                  session_id: s1
+                  message: "What is happening with my cases? CIT-3001"
+              payment:
+                summary: Next payment
+                value:
+                  session_id: s1
+                  message: "When is my next payment? CIT-3001"
+              document:
+                summary: Register a document
+                value:
+                  session_id: s1
+                  message: "I have sent the rental contract for case FK-2026-1001"
+      responses:
+        '200':
+          description: The agent's reply.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '500':
+          description: Internal error while running the agent.
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required: [session_id, message]
+      properties:
+        session_id:
+          type: string
+          description: Conversation id used for memory continuity.
+        message:
+          type: string
+        context:
+          type: object
+          description: Optional platform context. Not read by this agent.
+      additionalProperties: true
+    ChatResponse:
+      type: object
+      required: [response]
+      properties:
+        response:
+          type: string

@@ -1,0 +1,11 @@
+[package]
+org = "fkdemo"
+name = "parental_benefit_agent"
+version = "0.1.0"
+distribution = "2201.13.4"
+
+[build-options]
+observabilityIncluded = true
+
+[[platform.java21.dependency]]
+path = "libs/noop-generator.jar"

@@ -1,0 +1,4 @@
+# Use ONE of these (Gemini is used if both are set)
+geminiApiKey = "<your-gemini-api-key>"
+# openAiApiKey = "<your-openai-api-key>"
+# geminiModel = "gemini-3.8-flash"

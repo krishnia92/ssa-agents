@@ -1,0 +1,109 @@
+openapi: 3.0.1
+info:
+  title: Claim Triage Agent API
+  description: >-
+    Internal API for case systems. Submit a benefit claim; the agent combines
+    deterministic rule checks (completeness, overlaps, amount, registration)
+    with an LLM recommendation and returns a caseworker queue, priority and
+    rationale. Always requires human review.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8000
+paths:
+  /triage:
+    post:
+      summary: Triage a benefit claim
+      operationId: triage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Claim'
+            examples:
+              risky:
+                summary: Overlapping sickness claim, missing certificate
+                value:
+                  claimId: CL-1
+                  citizenId: CIT-4003
+                  benefitType: sickness benefit
+                  claimedAmountSek: 62000
+                  periodStart: "2026-09-15"
+                  periodEnd: "2026-10-15"
+                  submittedDocuments: []
+              clean:
+                summary: Small complete VAB claim
+                value:
+                  claimId: CL-2
+                  citizenId: CIT-4001
+                  benefitType: vab
+                  claimedAmountSek: 1800
+                  periodStart: "2026-09-22"
+                  periodEnd: "2026-09-22"
+              newResident:
+                summary: Housing allowance, recently registered claimant
+                value:
+                  claimId: CL-3
+                  citizenId: CIT-4002
+                  benefitType: housing allowance
+                  claimedAmountSek: 8400
+                  periodStart: "2026-10-01"
+                  periodEnd: "2026-12-31"
+                  submittedDocuments: [Rental contract, Income statement]
+      responses:
+        '200':
+          description: Triage recommendation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriageResult'
+        '400':
+          description: The claim did not match the expected shape.
+        '500':
+          description: Internal error.
+components:
+  schemas:
+    Claim:
+      type: object
+      required: [claimId, citizenId, benefitType, claimedAmountSek, periodStart, periodEnd]
+      properties:
+        claimId: {type: string}
+        citizenId: {type: string}
+        benefitType:
+          type: string
+          description: sickness benefit, parental benefit, housing allowance or vab
+        claimedAmountSek: {type: integer}
+        periodStart: {type: string, format: date}
+        periodEnd: {type: string, format: date}
+        submittedDocuments:
+          type: array
+          items: {type: string}
+        employerConfirmed: {type: boolean}
+        notes: {type: string}
+      additionalProperties: true
+    RiskFlag:
+      type: object
+      properties:
+        code: {type: string}
+        severity: {type: string, enum: [low, medium, high]}
+        detail: {type: string}
+    TriageResult:
+      type: object
+      properties:
+        claimId: {type: string}
+        complete: {type: boolean}
+        missingDocuments:
+          type: array
+          items: {type: string}
+        riskFlags:
+          type: array
+          items: {$ref: '#/components/schemas/RiskFlag'}
+        recommendedQueue:
+          type: string
+          enum: [fast-track, standard, complex-cases, control-and-investigation, request-completion]
+        priority: {type: string, enum: [low, normal, high]}
+        rationale: {type: string}
+        decidedBy:
+          type: string
+          description: ai-agent, ai-agent+policy-override or rules-fallback
+        requiresHumanReview: {type: boolean}

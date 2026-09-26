@@ -1,0 +1,64 @@
+openapi: 3.0.1
+info:
+  title: Sickness Benefit Assistant API
+  description: Chat endpoint for the sickness benefit assistant. Send a natural-language message; the agent answers using its tools and mock agency data.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8000
+paths:
+  /chat:
+    post:
+      summary: Send a chat message
+      operationId: chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              eligibility:
+                summary: Check eligibility
+                value:
+                  session_id: s1
+                  message: "I have been sick since 2026-09-10, do I get sickness benefit? CIT-2001"
+              status:
+                summary: Claim status
+                value:
+                  session_id: s1
+                  message: "What is the status of my sickness claim? CIT-2001"
+              notify:
+                summary: Notify sickness
+                value:
+                  session_id: s1
+                  message: "I am self-employed, CIT-2002, sick since yesterday, 100 percent"
+      responses:
+        '200':
+          description: The agent's reply.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '500':
+          description: Internal error while running the agent.
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required: [session_id, message]
+      properties:
+        session_id:
+          type: string
+          description: Conversation id used for memory continuity.
+        message:
+          type: string
+        context:
+          type: object
+          description: Optional platform context. Not read by this agent.
+      additionalProperties: true
+    ChatResponse:
+      type: object
+      required: [response]
+      properties:
+        response:
+          type: string
