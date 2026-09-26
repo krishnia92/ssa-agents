@@ -31,7 +31,7 @@ paths:
                 summary: Register a document
                 value:
                   session_id: s1
-                  message: "I have sent the rental contract for case FK-2026-1001"
+                  message: "I have sent the rental contract for case CASE-2026-1001"
       responses:
         '200':
           description: The agent's reply.

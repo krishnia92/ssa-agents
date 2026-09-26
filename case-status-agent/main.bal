@@ -82,18 +82,18 @@ type DocumentReceipt record {|
 |};
 
 isolated map<BenefitCase> cases = {
-    "FK-2026-1001": {
-        caseId: "FK-2026-1001", citizenId: "CIT-3001", benefitType: "Housing allowance",
+    "CASE-2026-1001": {
+        caseId: "CASE-2026-1001", citizenId: "CIT-3001", benefitType: "Housing allowance",
         status: "awaiting-documents", receivedDate: "2026-09-02", expectedDecisionDate: "2026-10-20",
         missingDocuments: ["Rental contract", "Income statement for 2026"], decision: ()
     },
-    "FK-2026-1002": {
-        caseId: "FK-2026-1002", citizenId: "CIT-3001", benefitType: "Parental benefit",
+    "CASE-2026-1002": {
+        caseId: "CASE-2026-1002", citizenId: "CIT-3001", benefitType: "Parental benefit",
         status: "decided", receivedDate: "2026-06-11", expectedDecisionDate: "2026-07-01",
         missingDocuments: [], decision: "Approved: 60 days at sickness-benefit level from 2026-08-01."
     },
-    "FK-2026-1003": {
-        caseId: "FK-2026-1003", citizenId: "CIT-3002", benefitType: "Sickness benefit",
+    "CASE-2026-1003": {
+        caseId: "CASE-2026-1003", citizenId: "CIT-3002", benefitType: "Sickness benefit",
         status: "in-review", receivedDate: "2026-09-15", expectedDecisionDate: "2026-10-05",
         missingDocuments: [], decision: ()
     }
@@ -128,7 +128,7 @@ isolated function listCases(string citizenId) returns BenefitCase[] {
 
 # Gets the full details of one case.
 #
-# + caseId - Case id, e.g. FK-2026-1001
+# + caseId - Case id, e.g. CASE-2026-1001
 # + return - The case, or an error if not found
 @ai:AgentTool
 isolated function getCaseDetails(string caseId) returns BenefitCase|error {
@@ -204,7 +204,7 @@ isolated function getCurrentDate() returns string => time:utcToString(time:utcNo
 
 final ai:Agent caseStatusAgent = check new ({
     systemPrompt: {
-        role: "Case and Payment Status Assistant for the Swedish Social Insurance Agency",
+        role: "Case and Payment Status Assistant for a public social insurance agency",
         instructions: string `You help citizens check the status of their benefit cases,
             see which documents are missing, and find their next payment date.
             Always ask for the citizen id (for example CIT-3001) first. Use the tools for

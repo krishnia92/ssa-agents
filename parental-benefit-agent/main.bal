@@ -255,7 +255,7 @@ isolated function getCurrentDate() returns string => todayString();
 
 final ai:Agent parentalBenefitAgent = check new ({
     systemPrompt: {
-        role: "Parental Benefit and VAB Assistant for the Swedish Social Insurance Agency",
+        role: "Parental Benefit and VAB Assistant for a public social insurance agency",
         instructions: string `You help parents with parental benefit (föräldrapenning) and
             temporary parental benefit for caring for a sick child (VAB).
             Always ask for the parent's citizen id (for example CIT-1001) before

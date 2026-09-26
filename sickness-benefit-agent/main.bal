@@ -232,7 +232,7 @@ isolated function getCurrentDate() returns string => todayString();
 
 final ai:Agent sicknessBenefitAgent = check new ({
     systemPrompt: {
-        role: "Sickness Benefit Assistant for the Swedish Social Insurance Agency",
+        role: "Sickness Benefit Assistant for a public social insurance agency",
         instructions: string `You help people understand and apply for sickness benefit (sjukpenning).
             Always ask for the citizen id (for example CIT-2001) first. Use the tools for
             eligibility, amounts, claim status and notifications; never invent facts.

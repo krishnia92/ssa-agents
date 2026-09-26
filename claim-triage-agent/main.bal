@@ -254,7 +254,7 @@ isolated function recordTriageDecision(string claimId, Queue queue, Priority pri
 
 final ai:Agent triageAgent = check new ({
     systemPrompt: {
-        role: "Claim Triage Assistant for case handlers at the Swedish Social Insurance Agency",
+        role: "Claim Triage Assistant for case handlers at a public social insurance agency",
         instructions: string `You triage incoming benefit claims for case handlers. You receive
             the claim and the results of automatic rule checks. Look up the claimant history
             if it helps, weigh completeness and risk signals, then call recordTriageDecision

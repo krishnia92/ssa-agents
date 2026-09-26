@@ -17,7 +17,7 @@ bal run
 ## Try
 - "What is happening with my cases? CIT-3001"
 - "When is my next payment?"
-- "I sent the rental contract for FK-2026-1001"
+- "I sent the rental contract for CASE-2026-1001"
 - "I also sent the income statement for 2026" (case moves to in-review)
 
 See the root README for GitHub and Agent Manager deployment steps.
