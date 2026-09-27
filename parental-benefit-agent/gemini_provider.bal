@@ -35,7 +35,11 @@ public isolated client class GeminiModelProvider {
     public isolated function init(string apiKey, string model = "gemini-3.8-flash",
             string serviceUrl = DEFAULT_GEMINI_URL, string? fallbackModel = ()) returns ai:Error? {
         // Retry transient overload / rate-limit responses with backoff (2s, 4s, 8s).
+        // The key is set through the client's auth config (like the official OpenAI connector),
+        // not as a hand-written header, so platform layers that add their own Authorization
+        // header to plain requests do not replace it.
         http:Client|error c = new (serviceUrl, {
+            auth: {token: apiKey},
             timeout: 120,
             retryConfig: {count: 3, interval: 2, backOffFactor: 2.0, maxWaitInterval: 10, statusCodes: [429, 500, 503]}
         });
@@ -68,15 +72,13 @@ public isolated client class GeminiModelProvider {
             body["stop"] = stop;
         }
 
-        json|error response = self.httpClient->post("/chat/completions", body,
-            {"Authorization": "Bearer " + self.apiKey});
+        json|error response = self.httpClient->post("/chat/completions", body);
         string? fallback = self.fallbackModel;
         if response is http:ApplicationResponseError && fallback is string
                 && (response.detail().statusCode == 503 || response.detail().statusCode == 429) {
             // Main model still overloaded after retries: try the fallback model once.
             body["model"] = fallback;
-            response = self.httpClient->post("/chat/completions", body,
-                {"Authorization": "Bearer " + self.apiKey});
+            response = self.httpClient->post("/chat/completions", body);
         }
         if response is error {
             string detail = response.message();
@@ -87,6 +89,7 @@ public isolated client class GeminiModelProvider {
         }
         return self.toAssistantMessage(response);
     }
+
 
     // Structured generation is not used by the Agent. Bound to a tiny Java stub
     // (libs/noop-generator.jar) only so this class satisfies the ModelProvider interface.
