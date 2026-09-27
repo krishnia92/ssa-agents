@@ -125,9 +125,10 @@ public isolated client class GeminiModelProvider {
                         lock {
                             sig = self.thoughtSignatures[id].clone();
                         }
-                        if sig !is () {
-                            tc["extra_content"] = sig;
-                        }
+                        // Gemini 3 models reject replayed tool calls without a thought signature.
+                        // Use the real one when we have it; otherwise Google's documented placeholder.
+                        tc["extra_content"] = sig !is () ? sig
+                            : {google: {thought_signature: "skip_thought_signature_validator"}};
                         toolCalls.push(tc);
                     }
                     msg["tool_calls"] = toolCalls;
